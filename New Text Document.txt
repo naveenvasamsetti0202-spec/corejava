@@ -1,0 +1,63 @@
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    CallbackQueryHandler,
+    ContextTypes
+)
+
+BOT_TOKEN = "YOUR_BOT_TOKEN"
+CHANNEL_ID = "@your_channel_username"
+CHANNEL_LINK = "https://t.me/your_channel_username"
+
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    keyboard = [
+        [InlineKeyboardButton("JOIN CHANNEL", url=CHANNEL_LINK)],
+        [InlineKeyboardButton("I HAVE JOINED", callback_data="verify")]
+    ]
+
+    await update.message.reply_text(
+        "Welcome to GET JOB BROTHER!\n\n"
+        "Please join our Telegram channel to access PDF materials.",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+async def verify(update: Update, context: ContextTypes.DEFAULT_TYPE):
+
+    query = update.callback_query
+    await query.answer()
+
+    user_id = query.from_user.id
+
+    member = await context.bot.get_chat_member(
+        chat_id=CHANNEL_ID,
+        user_id=user_id
+    )
+
+    if member.status in ["member", "administrator", "creator"]:
+
+        keyboard = [
+            [InlineKeyboardButton(
+                "DOWNLOAD PDF",
+                url="YOUR_PDF_LINK"
+            )]
+        ]
+
+        await query.edit_message_text(
+            "Congratulations! Your access is unlocked.",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+    else:
+        await query.answer(
+            "Please join our channel first!",
+            show_alert=True
+        )
+
+app = Application.builder().token(BOT_TOKEN).build()
+
+app.add_handler(CommandHandler("start", start))
+app.add_handler(CallbackQueryHandler(verify, pattern="^verify$"))
+
+app.run_polling()
