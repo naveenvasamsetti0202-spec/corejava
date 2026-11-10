@@ -1,4 +1,5 @@
-import logging
+import os
+
 
 from telegram import (
     InlineKeyboardButton,
@@ -15,7 +16,7 @@ from telegram.ext import (
 
 # ---------------- CONFIGURATION ----------------
 
-BOT_TOKEN = "9298066553:AAFnll7HgmlLUE9RABzEJap1jdD2t6iOduM"
+BOT_TOKEN = os.environ["BOT_TOKEN"]
 
 CHANNEL_ID = "@getjobbrotherjobs"
 
